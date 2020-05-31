@@ -12,6 +12,7 @@ var Pacman = function(centerX,centerY){
 Pacman.prototype.moveLeft = function(){ 
     this.startAngle = Math.PI + Math.PI/5;
     this.endAngle = Math.PI - Math.PI/5;
+
     this.centerX = this.centerX - this.step;
 };
 
@@ -24,16 +25,19 @@ Pacman.prototype.moveRight = function(){
 Pacman.prototype.moveDown = function(){ 
     this.startAngle = Math.PI/2 + Math.PI/5;
     this.endAngle = Math.PI/2 - Math.PI/5;
+
     this.centerY = this.centerY + this.step;
 };
 
 Pacman.prototype.moveUp = function(){ 
     this.startAngle = 3*Math.PI/2 + Math.PI/5;
     this.endAngle = 3*Math.PI/2 - Math.PI/5;
+
     this.centerY = this.centerY - this.step;
 };
 
-Pacman.prototype.draw = function(ctx){
+Pacman.prototype.draw = function(ctx, imagebackgroud){
+
     if(this.centerY < 0){
         this.centerY = 600; 
     };
@@ -50,48 +54,50 @@ Pacman.prototype.draw = function(ctx){
         this.centerX = 0; 
     };
 
-    var radius = 20;
-    ctx.beginPath();
-
+    var radius = 15;
     var xMouth = radius * Math.cos(this.startAngle);
     var yMouth = radius * Math.sin(this.startAngle);
-    
+
+    ctx.beginPath(); 
     ctx.moveTo(this.centerX,this.centerY);
     ctx.lineTo(xMouth + this.centerX, yMouth+this.centerY);
-
     ctx.arc(this.centerX, this.centerY, radius, this.startAngle, this.endAngle);
-    
     ctx.lineTo(this.centerX,this.centerY);
-    
-    
     ctx.closePath();
-    ctx.fillStyle="yellow";
     
+    ctx.fillStyle="yellow";
     ctx.fill();
     ctx.stroke();
 };
 
 
 window.addEventListener("keydown",this.keyDown,true);
-window.addEventListener("keyup",this.keyUp,true);
-window.addEventListener("keypress",this.keyPress,true);
 
+//Set up canvas
 var canvas = document.querySelector('canvas');
-
-
-var pacman = new Pacman(100,100);
-
-
 canvas.height=600;
 canvas.width = 600;
 var ctx = canvas.getContext("2d");
 
-pacman.draw(ctx);
+//create scene objects
+var pacman = new Pacman(100,113);
+var background = new Image();
 
+//draw the scene
+function drawScene () {
 
+    //clear
+    ctx.clearRect(0,0,800,800);
+
+    //draw background
+    ctx.drawImage (background,0,0);
+
+    //draw packy
+    pacman.draw(ctx, background);
+}
+
+//arrow movements
 function keyDown(e) {
-    console.log ("keyDown: " + e.keyCode);
-
     if(e.keyCode == 37){
       pacman.moveLeft();  
     };
@@ -108,24 +114,16 @@ function keyDown(e) {
         pacman.moveUp();
     };
 
-    ctx.clearRect(0,0,600,600);
-    pacman.draw(ctx);
-
-};
-
-
-function keyUp(e) {
-    console.log ("keyUp:" + e.keyCode);
-};
-
-function keyPress(e){
-    console.log ("keyPress"+e.keyCode);
+    drawScene();
 };
 
 canvas.addEventListener( "keydown", keyDown, true);
-canvas.addEventListener( "keyUp", keyUp, true);
 
-
-function keyUp() {
-    console.log ("keyUp");
+//load the background image
+background.onload = function () {
+    drawScene();
 };
+
+background.src = "file:///Users/apellizzaro/dev-personal/pacman/pacman.png";
+
+
